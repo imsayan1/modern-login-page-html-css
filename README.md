@@ -1,4 +1,4 @@
-# modern-login-page-html-css
+<img width="1393" height="793" alt="Screenshot" src="https://github.com/user-attachments/assets/2b2c0895-b613-44f7-b7ca-d908169a2867" /># modern-login-page-html-css
 “A modern glassmorphism login page with floating elements, hover effects, and neon-inspired colors built with HTML &amp; CSS.”
 # 🌌 Modern Login Page (HTML + CSS)
 
@@ -18,7 +18,7 @@ A sleek, modern **login page** built with pure **HTML & CSS** featuring:
 ---
 
 ## 📸 Preview
-![Login Page Screenshot](screenshot.png)
+![Login Page Screenshot](Screenshot.png)
 
 ---
 
