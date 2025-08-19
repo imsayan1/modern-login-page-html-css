@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Modern Login</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+  <style>
+    /* -------- Theme Tokens (uncommon modern palette) -------- */
+    :root{
+      --bg-0:#0b0a14;           /* near-black indigo */
+      --bg-1:#0f0b2a;           /* deep nebula violet */
+      --bg-2:#101a2b;           /* ink blue */
+      --glass:#ffffff10;        /* glass layer */
+      --text:#e6e7ee;           
+      --muted:#a7adcc;          
+      --accent-1:#7B61FF;       /* periwinkle electric */
+      --accent-2:#24E1C1;       /* mint-teal neon */
+      --accent-3:#FF6AD5;       /* hyper pink */
+      --accent-4:#A1FF0A;       /* acid lime */
+      --danger:#ff5d5d;
+      --ok:#50e3a4;
+      --radius:22px;
+      --card-w: min(94vw, 420px);
+      --ring: 0 0 0 6px #ffffff10, 0 0 0 12px #ffffff06;
+    }
+
+    /* Reset */
+    *,*:before,*:after{box-sizing:border-box}
+    body{margin:0; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", sans-serif; color:var(--text); background: radial-gradient(1200px 800px at 15% 10%, #1a1040, transparent 60%), radial-gradient(800px 600px at 85% 20%, #0c3b3b, transparent 55%), radial-gradient(1000px 700px at 50% 85%, #3b103a, transparent 60%), linear-gradient(120deg, var(--bg-1), var(--bg-2)); min-height:100svh; overflow-x:hidden}
+
+    /* Subtle star/noise overlay */
+    .grain{position:fixed; inset:0; pointer-events:none; background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="60" height="60" filter="url(%23n)" opacity="0.035"/></svg>'); mix-blend-mode:soft-light}
+
+    /* Floating blobs */
+    .blob{position:fixed; border-radius:50%; filter:blur(40px); opacity:.55; z-index:0; animation: float 18s ease-in-out infinite}
+    .blob.one{width:380px; height:380px; left:-80px; top:-60px; background:radial-gradient(circle at 30% 30%, var(--accent-3), transparent 70%), radial-gradient(circle at 70% 70%, var(--accent-1), transparent 60%);}
+    .blob.two{width:320px; height:320px; right:-80px; top:10vh; animation-delay: -6s; background:radial-gradient(circle at 70% 20%, var(--accent-2), transparent 70%), radial-gradient(circle at 30% 80%, var(--accent-4), transparent 60%);}
+    .blob.three{width:260px; height:260px; left:20vw; bottom:-80px; animation-duration:22s; background:radial-gradient(circle at 50% 50%, #6bfffd, transparent 60%), radial-gradient(circle at 30% 70%, #b16bff, transparent 60%)}
+    @keyframes float{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(0,-18px,0) scale(1.04)}}
+
+    /* Layout */
+    .wrap{position:relative; z-index:1; min-height:100svh; display:grid; place-items:center; padding: clamp(20px, 4vw, 48px)}
+
+    /* Card (glassmorphism) */
+    .card{width:var(--card-w); background:linear-gradient(180deg, #ffffff15, #ffffff08); backdrop-filter: blur(16px) saturate(120%); -webkit-backdrop-filter: blur(16px) saturate(120%); border:1px solid #ffffff30; border-radius: var(--radius); box-shadow: 0 20px 80px #0008, 0 2px 0 #ffffff22 inset; position:relative; overflow:hidden}
+
+    /* Animated gradient border */
+    .card:before{content:""; position:absolute; inset:-2px; border-radius: calc(var(--radius) + 2px); padding:2px; background: conic-gradient(from var(--spin,0turn), var(--accent-1), var(--accent-3), var(--accent-2), var(--accent-4), var(--accent-1)); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: spin 8s linear infinite}
+    @keyframes spin{to{--spin:1turn}}
+
+    /* Card inner */
+    .inner{position:relative; padding:28px; padding-top:22px}
+
+    /* Header */
+    .brand{display:flex; align-items:center; gap:12px; margin-bottom:6px}
+    .logo{width:28px; height:28px; border-radius:9px; background:linear-gradient(135deg, var(--accent-4), var(--accent-2)); box-shadow: 0 4px 16px #24e1c14d, 0 0 0 1px #ffffff60 inset}
+    .title{font-weight:800; letter-spacing:.3px; font-size:1.25rem}
+    .subtitle{color:var(--muted); font-weight:400; margin: 2px 0 18px 0}
+
+    /* Inputs */
+    .fld{position:relative; margin:14px 0}
+    .label{display:block; font-size:.86rem; color:#cdd3f8; margin:0 0 8px 2px}
+    .inp{width:100%; padding:14px 44px 14px 44px; font-size:1rem; color:var(--text); background: linear-gradient(180deg, #0a0f1f, #0c1426); border:1px solid #2a314e; border-radius:16px; outline:none; transition: box-shadow .24s ease, border-color .24s ease, transform .12s ease}
+    .inp::placeholder{color:#7f89b0}
+    .fld:hover .inp{border-color:#4b62ff66}
+    .inp:focus{box-shadow: 0 0 0 6px #8b7cff24, 0 12px 40px #0006; border-color: var(--accent-1); transform: translateY(-1px)}
+    .icon{position:absolute; left:14px; top:50%; transform:translateY(-50%); width:18px; height:18px; opacity:.9}
+    .toggle{position:absolute; right:12px; top:50%; transform:translateY(-50%); border:0; background:#ffffff12; width:34px; height:34px; border-radius:12px; display:grid; place-items:center; cursor:pointer; transition: transform .15s}
+    .toggle:active{transform: scale(.96)}
+
+    /* Remember + link row */
+    .row{display:flex; align-items:center; justify-content:space-between; gap:10px; margin: 6px 2px 14px}
+    .checkbox{accent-color: var(--accent-2)}
+    a{color:var(--accent-2); text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    /* Primary button */
+    .btn{width:100%; padding:14px 16px; border:0; border-radius:16px; font-weight:700; letter-spacing:.3px; color:#081013; background: linear-gradient(135deg, var(--accent-4), var(--accent-2)); cursor:pointer; box-shadow: 0 12px 30px #24e1c14a, 0 2px 0 #ffffff40 inset; transition: transform .14s ease, box-shadow .2s ease, filter .2s ease; position:relative; overflow:hidden}
+    .btn:hover{transform: translateY(-2px); box-shadow: 0 18px 46px #24e1c160, 0 2px 0 #ffffff60 inset}
+    .btn:active{transform: translateY(0)}
+    .btn:before{content:""; position:absolute; inset:0; background: linear-gradient(120deg, transparent, #ffffff30, transparent); transform: translateX(-100%); transition: transform .7s ease}
+    .btn:hover:before{transform: translateX(100%)}
+
+    /* Divider */
+    .divider{display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:12px; color:#cfd4ff80; margin:18px 0}
+    .divider:before, .divider:after{content:""; height:1px; background:linear-gradient(90deg, transparent, #cfd4ff40, transparent)}
+
+    /* Socials */
+    .grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    .sbtn{display:flex; align-items:center; justify-content:center; gap:10px; padding:12px; border:1px solid #2a314e; background:#0a0f1f; border-radius:14px; color:#cfd4ff; cursor:pointer; transition: transform .15s ease, border-color .2s}
+    .sbtn:hover{transform: translateY(-2px); border-color:#5966ff}
+
+    /* Footer */
+    .foot{margin-top:16px; text-align:center; color:#cfd4ffb5; font-size:.92rem}
+    .foot a{color: var(--accent-3)}
+
+    /* Safety: reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      .blob{animation:none}
+      .card:before{animation:none}
+      .btn:before{display:none}
+    }
+
+    /* Small screens */
+    @media (max-width:420px){
+      .inner{padding:22px}
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Effects -->
+  <div class="blob one" aria-hidden="true"></div>
+  <div class="blob two" aria-hidden="true"></div>
+  <div class="blob three" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <main class="wrap">
+    <form class="card" id="login-form" autocomplete="on" novalidate>
+      <div class="inner">
+        <header class="brand" aria-label="App brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <div class="title">Welcome back</div>
+            <div class="subtitle">Sign in to continue</div>
+          </div>
+        </header>
+
+        <!-- Email -->
+        <div class="fld">
+          <label class="label" for="email">Email</label>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h16v16H4z" opacity=".18"/><path d="M4 8l8 5 8-5"/></svg>
+          <input class="inp" type="email" id="email" name="email" placeholder="you@example.com" required inputmode="email" autocomplete="email"/>
+        </div>
+
+        <!-- Password -->
+        <div class="fld">
+          <label class="label" for="password">Password</label>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="10" width="18" height="11" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg>
+          <input class="inp" type="password" id="password" name="password" placeholder="••••••••" minlength="6" required autocomplete="current-password"/>
+          <button class="toggle" type="button" id="pw-toggle" aria-label="Show password">
+            <svg id="eye" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3.2"/></svg>
+          </button>
+        </div>
+
+        <div class="row">
+          <label><input type="checkbox" class="checkbox" id="remember" /> Remember me</label>
+          <a href="#" onclick="alert('Demo only 🙂'); return false;">Forgot password?</a>
+        </div>
+
+        <button class="btn" type="submit">Sign in</button>
+
+        <div class="divider">or continue with</div>
+        <div class="grid">
+          <button class="sbtn" type="button" aria-label="Continue with Google" onclick="demoAuth('Google')">
+            <svg width="18" height="18" viewBox="0 0 533.5 544.3" aria-hidden="true"><path fill="#EA4335" d="M533.5 278.4c0-18.5-1.7-37-5.2-54.9H272.1v103.9h146.9c-6.1 33.3-25 61.6-53.3 80.6v66h86.1c50.4-46.5 81.7-115.1 81.7-195.6z"/><path fill="#34A853" d="M272.1 544.3c72.2 0 132.9-23.9 177.2-64.8l-86.1-66c-24 16.1-54.7 25.6-91.1 25.6-70 0-129.3-47.2-150.5-110.5H34.2v69.4c44 87.4 134.1 146.3 237.9 146.3z"/><path fill="#4A90E2" d="M121.6 328.6c-10-29.8-10-62.1 0-91.9V167.3H34.2c-43.6 86.8-43.6 189 0 275.8l87.4-64.5z"/><path fill="#FBBC05" d="M272.1 107.7c39.2-.6 76.7 14.4 105.5 42.2l78.2-78.2C405.2 24.6 340.4-2.7 272.1 0 168.3 0 78.2 58.8 34.2 146.2l87.4 69.4c21.2-63.4 80.5-110.6 150.5-107.9z"/></svg>
+            Google
+          </button>
+          <button class="sbtn" type="button" aria-label="Continue with GitHub" onclick="demoAuth('GitHub')">
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38l-.01-1.34c-2.01.44-2.53-.86-2.53-.86-.36-.91-.89-1.16-.89-1.16-.73-.5.06-.49.06-.49.81.06 1.24.83 1.24.83.72 1.23 1.89.88 2.35.67.07-.52.28-.87.5-1.07-1.6-.18-3.28-.8-3.28-3.55 0-.78.28-1.42.73-1.92-.07-.18-.32-.92.07-1.92 0 0 .61-.2 2 .73a6.9 6.9 0 0 1 3.64 0c1.39-.93 2-.73 2-.73.39 1 .14 1.74.07 1.92.45.5.73 1.14.73 1.92 0 2.76-1.69 3.36-3.3 3.54.29.24.54.73.54 1.48l-.01 2.2c0 .22.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+            GitHub
+          </button>
+        </div>
+
+        <div id="error" role="alert" aria-live="polite" style="color:var(--danger); font-size:.92rem; margin:12px 2px 0; min-height:1.2em"></div>
+
+        <div class="foot">No account? <a href="#" onclick="alert('Demo only 🙂'); return false;">Create one</a></div>
+      </div>
+    </form>
+  </main>
+
+  <script>
+    // Password show/hide
+    const pw = document.getElementById('password');
+    const tog = document.getElementById('pw-toggle');
+    const eye = document.getElementById('eye');
+    tog.addEventListener('click', ()=>{
+      const isPw = pw.type === 'password';
+      pw.type = isPw ? 'text' : 'password';
+      tog.setAttribute('aria-label', isPw ? 'Hide password' : 'Show password');
+      eye.innerHTML = isPw
+        ? '<path d="M17.94 17.94 6.06 6.06"/><path d="M10.58 5.08A9.95 9.95 0 0 1 12 5c6 0 10 7 10 7a17.46 17.46 0 0 1-2.23 2.88"/><path d="M2 2l20 20"/>'
+        : '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3.2"/>'
+    })
+
+    // Simple client-side validation demo
+    const form = document.getElementById('login-form');
+    const err = document.getElementById('error');
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      err.textContent = '';
+      const email = form.email.value.trim();
+      const pass = form.password.value;
+      if(!email){ err.textContent = 'Please enter your email.'; return; }
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ err.textContent = 'Please enter a valid email address.'; return; }
+      if(pass.length < 6){ err.textContent = 'Password must be at least 6 characters.'; return; }
+
+      // Simulate success
+      err.style.color = 'var(--ok)';
+      err.textContent = 'Success! (demo only)';
+      setTimeout(()=>{ err.style.color = 'var(--danger)'; err.textContent=''; }, 1500);
+    });
+
+    // Demo social auth
+    function demoAuth(provider){
+      alert(provider + ' auth — demo only');
+    }
+  </script>
+</body>
+</html>
+
