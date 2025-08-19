@@ -34,7 +34,7 @@ A sleek, modern **login page** built with pure **HTML & CSS** featuring:
 git clone https://github.com/imsayan1/modern-login-page-html-css.git
 
 # Open the project
-cd modern-login-page-html-css
+cd Morden-login_page
 
 # Run
 open index.html
