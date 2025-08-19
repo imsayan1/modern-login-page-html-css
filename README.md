@@ -31,7 +31,7 @@ A sleek, modern **login page** built with pure **HTML & CSS** featuring:
 ## 📂 How to Use
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/modern-login-page-html-css.git
+git clone https://github.com/imsayan1/modern-login-page-html-css.git
 
 # Open the project
 cd modern-login-page-html-css
